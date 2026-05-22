@@ -1,0 +1,33 @@
+<style>
+  .hud-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4;
+    width: 14;
+    height: 4;
+    background-color: #0a1620;
+    border-color: #2a5570;
+    border-width: 0.12;
+    border-radius: 0.6;
+  }
+
+  .hud-label {
+    font-size: 1.4;
+    color: #7eb8d4;
+    text-align: center;
+  }
+
+  .hud-value {
+    font-size: 2.8;
+    font-weight: medium;
+    color: #e8f4ff;
+    text-align: center;
+    margin-top: 0.2;
+  }
+</style>
+<div class="hud-panel">
+  <span class="hud-label">DEPTH</span>
+  <span id="depth-value" class="hud-value">10.0 m</span>
+</div>
