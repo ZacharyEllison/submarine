@@ -36,13 +36,13 @@ const assets: AssetManifest = {};
 World.create(document.getElementById("scene-container") as HTMLDivElement, {
   assets,
   render: {
-    fov: 55,
+    fov: 65,
     near: 0.1,
     far: 250,
     defaultLighting: false,
     camera: {
       position: [0, 1.2, 0.05],
-      lookAt: [0, 0.15, -11],
+      lookAt: [0, -1.5, -12],
     },
   },
   xr: {
@@ -76,13 +76,14 @@ World.create(document.getElementById("scene-container") as HTMLDivElement, {
   const { camera, player, scene } = world;
   player.position.set(0, 0, 0);
   camera.position.set(0, 1.2, 0.05);
-  camera.lookAt(0, 0.15, -11);
+  camera.lookAt(0, -1.5, -12);
   scene.background = new Color(0x001a2a);
   applyReefFog(scene, 0);
 
   const subRootGroup = new Group();
   subRootGroup.name = "SubRoot";
-  subRootGroup.position.set(0, -10, 0);
+  // SubRoot starts at origin — it moves to simulate the sub travelling through the world.
+  // The cockpit (and player) stay fixed; only reef/world content is parented here.
 
   const subRootEntity = world.createTransformEntity(subRootGroup, {
     parent: world.sceneEntity,
@@ -90,14 +91,16 @@ World.create(document.getElementById("scene-container") as HTMLDivElement, {
   });
   subRootEntity.addComponent(SubRoot);
   subRootEntity.addComponent(SubState, {
-    depthMeters: 10,
+    depthMeters: 0,
     spotlightOn: false,
   });
 
+  // Cockpit is fixed around the player — NOT a child of SubRoot.
   const surfaceTexture = createSurfaceCanvasTexture();
   const { group: cockpit, dashGroup } = createCockpit(surfaceTexture);
   const cockpitEntity = world.createTransformEntity(cockpit, {
-    parent: subRootEntity,
+    parent: world.sceneEntity,
+    persistent: true,
   });
   createDashboardControls(world, cockpitEntity, dashGroup);
 
@@ -133,6 +136,7 @@ World.create(document.getElementById("scene-container") as HTMLDivElement, {
   sun.position.set(3, 18, -8);
   subRootGroup.add(sun);
 
+  // Exterior spotlight travels with the reef-world (SubRoot) to illuminate the scene ahead.
   const spotlight = new SpotLight(0xffffcc, 0, 30, Math.PI / 5, 0.4);
   spotlight.position.set(0, 0.5, -2.5);
   spotlight.target.position.set(0, -2, -20);
@@ -140,9 +144,10 @@ World.create(document.getElementById("scene-container") as HTMLDivElement, {
   subRootGroup.add(spotlight.target);
   world.globals.subSpotlight = spotlight;
 
+  // Interior cockpit glow is fixed with the cockpit, not the moving world.
   const glow = new PointLight(0xff8844, 0.35, 4);
   glow.position.set(0, 0.9, -0.8);
-  subRootGroup.add(glow);
+  cockpit.add(glow);
 
   document.title = "Submarine Simulator";
   console.log(

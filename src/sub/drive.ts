@@ -117,13 +117,14 @@ export class SubDriveSystem extends createSystem(
       entity.setValue(SubState, "depth", depthInput);
 
       const object = entity.object3D!;
-      const yaw = object.rotation.y;
 
-      const forwardX = -Math.sin(yaw);
-      const forwardZ = -Math.cos(yaw);
-
-      const targetVx = forwardX * throttle * maxSpeed;
-      const targetVz = forwardZ * throttle * maxSpeed;
+      // The cockpit (and player) are fixed. SubRoot is the world that moves.
+      // Moving the world opposite to the sub's travel creates the illusion of motion.
+      // Sub forward = world backward: (+sin ry, 0, +cos ry) when rotation.y == 0 is +Z.
+      // Sub turning right → world rotates left → rotation.y decreases.
+      const targetVx = Math.sin(object.rotation.y) * throttle * maxSpeed;
+      const targetVz = Math.cos(object.rotation.y) * throttle * maxSpeed;
+      // Descending deeper → world content moves down → position.y decreases.
       const targetVy = depthInput * maxSpeed * 0.5;
 
       const blend = 1 - Math.pow(drag, delta * 60);
@@ -132,9 +133,9 @@ export class SubDriveSystem extends createSystem(
       this.velocityY += (targetVy - this.velocityY) * blend;
 
       object.position.x += this.velocityX * delta;
-      object.position.y += this.velocityY * delta;
+      object.position.y -= this.velocityY * delta;
       object.position.z += this.velocityZ * delta;
-      object.rotation.y += steering * delta;
+      object.rotation.y -= steering * delta;
 
       const reefClamp = clampReefPosition(
         object.position.x,
@@ -148,12 +149,14 @@ export class SubDriveSystem extends createSystem(
         this.velocityZ *= 0.5;
       }
 
+      // In inverted-world model: deeper sub → world moves down → SubRoot.y negative.
+      // depthMeters = -SubRoot.position.y  (positive = below surface).
       const depthMeters = clampDepthMeters(
-        depthMetersFromY(object.position.y),
+        -object.position.y,
         minDepth,
         maxDepth,
       );
-      object.position.y = yFromDepthMeters(depthMeters);
+      object.position.y = -depthMeters;
       entity.setValue(SubState, "depthMeters", depthMeters);
 
       this.bobPhase += delta * bobFreq * Math.PI * 2;

@@ -19,19 +19,24 @@ type CoralPlacement = {
   color: number;
 };
 
+// Reef floor sits at y=-3 (SubRoot-local). Coral y values just above the floor.
+// Placements are spread across a wide z range so the sub flies through them.
 const CORAL_PLACEMENTS: CoralPlacement[] = [
-  { x: -12, y: -5.8, z: -8, scale: 1.2, kind: "cone", color: 0xc45c3e },
-  { x: 8, y: -5.7, z: -10, scale: 0.9, kind: "sphere", color: 0xe8a87c },
-  { x: -5, y: -5.85, z: -14, scale: 1.5, kind: "cylinder", color: 0x6b4a8a },
-  { x: 14, y: -5.75, z: -12, scale: 1.1, kind: "cone", color: 0xd46a4a },
-  { x: 0, y: -5.8, z: -16, scale: 2, kind: "sphere", color: 0x9b5de5 },
-  { x: -18, y: -5.7, z: -11, scale: 0.8, kind: "cone", color: 0xf28482 },
-  { x: 20, y: -5.85, z: -9, scale: 1.3, kind: "cylinder", color: 0x4a7c59 },
-  { x: -10, y: -5.8, z: -20, scale: 1, kind: "sphere", color: 0xffb703 },
-  { x: 6, y: -5.75, z: -22, scale: 1.4, kind: "cone", color: 0x8ecae6 },
-  { x: -22, y: -5.8, z: -15, scale: 0.7, kind: "cylinder", color: 0x5a8f7b },
-  { x: 18, y: -5.7, z: -18, scale: 1.6, kind: "cone", color: 0xbc6c25 },
-  { x: -3, y: -5.85, z: -6, scale: 0.6, kind: "sphere", color: 0xdda15e },
+  { x: -8,  y: -2.8, z: -6,  scale: 2.2, kind: "cone",     color: 0xc45c3e },
+  { x: 6,   y: -2.7, z: -9,  scale: 1.8, kind: "sphere",   color: 0xe8a87c },
+  { x: -4,  y: -2.8, z: -13, scale: 2.8, kind: "cylinder",  color: 0x6b4a8a },
+  { x: 12,  y: -2.7, z: -11, scale: 2.0, kind: "cone",     color: 0xd46a4a },
+  { x: 0,   y: -2.8, z: -17, scale: 3.5, kind: "sphere",   color: 0x9b5de5 },
+  { x: -16, y: -2.7, z: -10, scale: 1.6, kind: "cone",     color: 0xf28482 },
+  { x: 18,  y: -2.8, z: -8,  scale: 2.4, kind: "cylinder",  color: 0x4a7c59 },
+  { x: -9,  y: -2.8, z: -20, scale: 2.0, kind: "sphere",   color: 0xffb703 },
+  { x: 5,   y: -2.7, z: -24, scale: 2.6, kind: "cone",     color: 0x8ecae6 },
+  { x: -20, y: -2.8, z: -16, scale: 1.4, kind: "cylinder",  color: 0x5a8f7b },
+  { x: 16,  y: -2.7, z: -19, scale: 3.0, kind: "cone",     color: 0xbc6c25 },
+  { x: -2,  y: -2.8, z: -5,  scale: 1.2, kind: "sphere",   color: 0xdda15e },
+  { x: 22,  y: -2.7, z: -14, scale: 2.2, kind: "cylinder",  color: 0x40916c },
+  { x: -14, y: -2.8, z: -26, scale: 2.8, kind: "cone",     color: 0xffd166 },
+  { x: 10,  y: -2.7, z: -30, scale: 3.2, kind: "sphere",   color: 0x06d6a0 },
 ];
 
 function createCoralMesh(placement: CoralPlacement): Mesh {
@@ -62,6 +67,7 @@ export function createReefFloor(diameterMeters = REEF_FLOOR_DIAMETER_M): Group {
   const reef = new Group();
   reef.name = "ReefFloor";
 
+  // Floor raised to y=-3 so it sits comfortably below the player viewport.
   const floor = new Mesh(
     new PlaneGeometry(diameterMeters, diameterMeters, 1, 1),
     new MeshStandardMaterial({
@@ -71,7 +77,7 @@ export function createReefFloor(diameterMeters = REEF_FLOOR_DIAMETER_M): Group {
     }),
   );
   floor.rotation.x = -Math.PI / 2;
-  floor.position.set(0, -6, -11);
+  floor.position.set(0, -3, -15);
   reef.add(floor);
 
   const sand = new Mesh(
@@ -81,11 +87,11 @@ export function createReefFloor(diameterMeters = REEF_FLOOR_DIAMETER_M): Group {
       roughness: 0.9,
       metalness: 0,
       emissive: 0x1a4a32,
-      emissiveIntensity: 0.35,
+      emissiveIntensity: 0.45,
     }),
   );
   sand.rotation.x = -Math.PI / 2;
-  sand.position.set(0, -5.9, -10);
+  sand.position.set(0, -2.9, -14);
   reef.add(sand);
 
   const boundary = new Mesh(
@@ -98,7 +104,7 @@ export function createReefFloor(diameterMeters = REEF_FLOOR_DIAMETER_M): Group {
     }),
   );
   boundary.rotation.x = -Math.PI / 2;
-  boundary.position.set(0, -6.2, -11);
+  boundary.position.set(0, -3.2, -15);
   reef.add(boundary);
 
   for (const placement of CORAL_PLACEMENTS) {

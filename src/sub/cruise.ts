@@ -6,8 +6,6 @@ import {
   applyBobTilt,
   clampDepthMeters,
   clampReefPosition,
-  depthMetersFromY,
-  yFromDepthMeters,
 } from "./motion.js";
 
 export class SubCruiseSystem extends createSystem(
@@ -57,26 +55,35 @@ export class SubCruiseSystem extends createSystem(
 
       this.pathAngle += (speed / radius) * delta;
 
-      object.position.x = Math.sin(this.pathAngle) * radius;
-      object.position.z = centerZ + Math.cos(this.pathAngle) * radius * 0.6;
+      // Sub's logical world position on an elliptical circuit.
+      const subX = Math.sin(this.pathAngle) * radius;
+      const subZ = centerZ + Math.cos(this.pathAngle) * radius * 0.6;
+      const subHeading = this.pathAngle + Math.PI;
+
+      // Inverted-world model: SubRoot moves opposite to sub's world position/heading.
+      object.position.x = -subX;
+      object.position.z = -subZ;
+      object.rotation.y = -subHeading;
 
       const reefClamp = clampReefPosition(
-        object.position.x,
-        object.position.z,
+        Math.abs(object.position.x),
+        Math.abs(object.position.z),
         reefRadius,
       );
-      object.position.x = reefClamp.x;
-      object.position.z = reefClamp.z;
+      if (reefClamp.clamped) {
+        object.position.x = Math.sign(object.position.x) * reefClamp.x;
+        object.position.z = Math.sign(object.position.z) * reefClamp.z;
+      }
 
       const depthMeters = clampDepthMeters(cruiseDepth, minDepth, maxDepth);
-      object.position.y = yFromDepthMeters(depthMeters);
-
-      object.rotation.y = this.pathAngle + Math.PI;
+      // Inverted-world: deeper → SubRoot.y more negative.
+      object.position.y = -depthMeters;
 
       entity.setValue(SubState, "throttle", speed / 2);
       entity.setValue(SubState, "steering", 0);
       entity.setValue(SubState, "depth", 0);
-      entity.setValue(SubState, "depthMeters", depthMetersFromY(object.position.y));
+      // depthMeters = -SubRoot.position.y in the inverted-world model.
+      entity.setValue(SubState, "depthMeters", -object.position.y);
 
       this.bobPhase += delta * bobFreq * Math.PI * 2;
       applyBobTilt(object, this.bobPhase, bobAmp);
