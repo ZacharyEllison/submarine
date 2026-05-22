@@ -14,16 +14,16 @@
 ### What happens
 
 1. User enters VR → they're sitting in the sub cockpit
-2. The sub hovers gently over a coral reef below
+2. The user **drives the sub** through the reef using hand controllers
 3. Player looks around: marine life swims past the viewport
-4. Dashboard has a few interactive elements (see §3)
-5. The sub drifts slowly along a path — time-based progression
+4. Dashboard has interactive controls (see §3)
+5. Movement feels underwater — slow, with inertia and drag
 
 ### Seating
 
 - **Sitting VR** (`immersive-vr`, sitting reference space)
-- Player is stationary (no locomotion, no teleport)
-- Head tracking only — look around freely
+- Player sits in the real world; the sub moves virtually around them
+- Head tracking only — arms reach out to drive the sub
 
 ## 3. Cockpit
 
@@ -37,11 +37,13 @@
 
 | Control              | Action                                                       |
 | -------------------- | ------------------------------------------------------------ |
+| **Throttle**         | Forward/backward speed — grab and pull/push a lever or twist |
+| **Steering wheel**   | Turn left/right — grab and rotate                            |
+| **Depth lever**      | Move up/down — pull up or push down                          |
 | **Spotlight toggle** | Switches an external sub light on/off, illuminating the reef |
-| **Depth gauge**      | Visual readout showing current "depth" (decorative)          |
-| **Periscope**        | Small periscope window showing a "surface" view (optional)   |
+| **Depth gauge**      | Visual readout showing current depth                         |
+| **Periscope**        | Small periscope window showing a "surface" view              |
 | **Speaker/hailer**   | Plays a sound through the sub speaker                        |
-| **Camera button**    | Takes a "photo" of the current view (spatial UI snapshot)    |
 
 ### Cockpit details
 
@@ -54,9 +56,10 @@
 
 ### Layout
 
-- **Guided path**: The sub follows a slow, gentle route over the reef
-- Duration: ~5-10 minute loop before repeating
-- The reef changes gradually (different coral types, fish schools, etc.)
+- **Open area**: Player drives freely around a bounded reef zone
+- Zone is large enough to feel expansive but bounded by "deep walls" (dark fog)
+- Multiple points of interest: coral gardens, cave entrance, etc.
+- Boundaries are invisible — deep water fog discourages going too far
 
 ### Marine life
 
@@ -126,11 +129,11 @@ submarine/
 
 | System           | Responsibility                                     |
 | ---------------- | -------------------------------------------------- |
-| `DriftSystem`    | Moves the sub along a gentle path over time        |
+| `SubDriveSystem` | Reads controller input → applies thrust, steering  |
 | `FlockingSystem` | Fish flocking AI (separation, alignment, cohesion) |
-| `ControlSystem`  | Dashboard button presses, spotlight toggle         |
+| `ControlSystem`  | Dashboard lever/wheel/button interactions          |
 | `ParticleSystem` | Bubbles rising, dust motes in water                |
-| `AudioSystem`    | Ambient audio, spatial sonar pings                 |
+| `AudioSystem`    | Ambient audio, sonar pings, hydrophone sounds      |
 | `CreatureSystem` | Large creature spawn timing and pathing            |
 
 ## 6. 3D Assets
@@ -172,16 +175,16 @@ submarine/
 - [ ] Flocking AI behavior
 - [ ] Large creature encounters (turtle/ray)
 
-### Phase 4: Sub Movement
+### Phase 4: Sub Driving
 
-- [ ] Slow drift path (time-based camera/sub movement)
-- [ ] Gentle bob/tilt animation
+- [ ] Controller input → sub thrust, steering, depth
+- [ ] Underwater physics feel (drag, inertia, slow response)
+- [ ] Gentle bob/tilt animation on movement
 
 ### Phase 5: Interactions
 
-- [ ] Dashboard controls (grab/press buttons)
+- [ ] Dashboard controls (grab/press buttons, levers)
 - [ ] Spotlight toggle
-- [ ] Camera/photo feature
 - [ ] Depth gauge UI
 
 ### Phase 6: Polish
@@ -191,10 +194,12 @@ submarine/
 - [ ] Atmosphere tuning
 - [ ] Testing in IWER + on headset
 
-## 8. Open Questions
+## 8. Decisions Made
 
-1. **Cockpit model**: Do you have a 3D model, or should we build one procedurally?
-2. **Reef scope**: How large/diverse should the reef be? (small loop vs. expansive)
-3. **Audio**: Do you have sound assets, or should we source generative/free audio?
-4. **Camera feature**: Is the "take a photo" feature important, or skip for now?
-5. **Periscope**: Include or leave out?
+1. **Cockpit model**: Procedural geometry (no external model needed)
+2. **Reef scope**: Small open zone to start — bounded by deep fog
+3. **Audio**: Source free CC0 audio assets
+4. **Camera feature**: Skip in v1
+5. **Periscope**: Include in v1
+6. **Target headset**: Meta Quest 2/3/3S
+7. **Driving**: User drives with hand controllers — throttle, steering, depth lever

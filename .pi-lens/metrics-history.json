@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "files": {
+    "src/cockpit.ts": {
+      "latest": {
+        "commit": "046caff",
+        "timestamp": "2026-05-20T22:24:44.475Z",
+        "mi": 37,
+        "cognitive": 0,
+        "nesting": 2,
+        "lines": 105,
+        "maxCyclomatic": 14,
+        "entropy": 4.94
+      },
+      "history": [
+        {
+          "commit": "046caff",
+          "timestamp": "2026-05-20T22:24:44.475Z",
+          "mi": 37,
+          "cognitive": 0,
+          "nesting": 2,
+          "lines": 105,
+          "maxCyclomatic": 14,
+          "entropy": 4.94
+        }
+      ],
+      "trend": "stable"
+    }
+  },
+  "capturedAt": "2026-05-20T22:24:49.476Z"
+}
