@@ -30,5 +30,5 @@ export default defineConfig({
     esbuildOptions: { target: "esnext" },
   },
   publicDir: "public",
-  base: "./",
+  base: process.env.GITHUB_ACTIONS ? "/submarine/" : "./",
 });
