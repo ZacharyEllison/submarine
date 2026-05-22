@@ -1,3 +1,5 @@
+shamefullyHoist: true
+
 allowBuilds:
   '@meta-quest/hzdb': true
   esbuild: true
